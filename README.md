@@ -7,7 +7,7 @@
     - Отправка email с токеном для сброса пароля
 
 #### Технологии
-- **API**: Django REST Framework
+- **API**: Django REST Framework и API Keys (Секретные ключи)
 - **ORM**: Django ORM
 - **Контейнеризация**: Docker и Docker Compose
 - **База данных**: PostgreSQL
@@ -20,69 +20,95 @@
 
 #### Структура проекта
 ```
-auth_django/                          # Корень проекта
-├── backend/                          # Django-приложение
-│   ├── auth_project/                 # Основной проект Django
-│   │   ├── __init__.py
-│   │   ├── settings/                 # Настройки Django (разделенные)
-│   │   │   ├── __init__.py
-│   │   │   ├── base.py               # Базовые настройки (без секретов)
-│   │   │   ├── development.py        # DEBUG=True, SQLite
-│   │   │   └── production.py         # DEBUG=False, PostgreSQL, HTTPS
-│   │   ├── urls.py                   # Главные URL
-│   │   └── wsgi.py
+auth_django/                          # Корневая директория проекта
+│
+├── backend/                          # Backend-часть на Django
+│   │
+│   ├── auth_config/                  # Основной конфигурационный модуль Django
+│   │   │
+│   │   ├── settings/                 # Настройки проекта (разделены по средам)
+│   │   │   ├── base.py               # Общие настройки для всех сред
+│   │   │   ├── development.py        # Настройки для разработки (DEBUG=True)
+│   │   │   └── production.py         # Продакшен-настройки (DEBUG=False)
+│   │   │
+│   │   ├── urls.py                   # Корневая конфигурация URL
+│   │   └── wsgi.py                   # WSGI-конфигурация для развертывания
 │   │
 │   ├── authentication/               # Приложение аутентификации
-│   │   ├── migrations/
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py                 # ! Только модели для токенов/сессий
-│   │   ├── serializers.py            # JWT/OAuth сериализаторы
-│   │   ├── urls.py                   # auth/jwt/, auth/oauth/
-│   │   ├── views.py                  # Логика JWT и OAuth
-│   │   └── tests/
-│   │       ├── __init__.py
-│   │       ├── test_models.py
-│   │       └── test_views.py         # ! Тесты разделены
+│   │   │
+│   │   ├── oauth/                    # Модуль OAuth аутентификации
+│   │   │   ├── backends.py           # Кастомные бэкенды аутентификации
+│   │   │   ├── providers.py          # Конфигурации OAuth-провайдеров
+│   │   │   ├── serializers.py        # Сериализаторы для OAuth
+│   │   │   ├── urls.py               # Маршруты OAuth (/oauth/google/ и др.)
+│   │   │   ├── views.py              # View-классы для OAuth
+│   │   │   └── tests/                # Тесты OAuth-функционала
+│   │   │       ├── test_backends.py
+│   │   │       └── test_views.py
+│   │   │
+│   │   ├── jwt/                      # Модуль JWT аутентификации
+│   │   │   ├── serializers.py        # Сериализаторы JWT-токенов
+│   │   │   ├── urls.py               # Маршруты JWT (/jwt/create/ и др.)
+│   │   │   ├── views.py              # View-классы для JWT
+│   │   │   └── tests/                # Тесты JWT-функционала
+│   │   │       ├── test_serializers.py
+│   │   │       └── test_views.py
+│   │   │
+│   │   ├── services/                 # Сервисный слой для бизнес-логики
+│   │   │   ├── auth_services.py      # Сервисы аутентификации
+│   │   │   └── token_services.py     # Сервисы работы с токенами
+│   │   │
+│   │   ├── middleware.py             # Проверка API-ключа для доступа разработчиков
+│   │   ├── admin.py                  # Админ-панель для моделей
+│   │   ├── apps.py                   # Конфигурация приложения
+│   │   ├── models.py                 # Модели для токенов и сессий
+│   │   ├── urls.py                   # Основные URL аутентификации
+│   │   └── views.py                  # Общие view (выход из системы и др.)
 │   │
-│   ├── users/                        # Приложение пользователей
-│   │   ├── migrations/
-│   │   ├── __init__.py
-│   │   ├── admin.py
-│   │   ├── apps.py
-│   │   ├── models.py                 # ! Кастомная модель User
-│   │   ├── serializers.py            # Сериализаторы User
-│   │   ├── urls.py                   # users/, users/me/
-│   │   ├── views.py                  # CRUD для User
-│   │   └── tests/
-│   │       ├── __init__.py
+│   ├── users/                        # Приложение работы с пользователями
+│   │   ├── admin.py                  # Админка для пользователей
+│   │   ├── apps.py                   # Конфигурация приложения
+│   │   ├── models.py                 # Кастомная модель пользователя
+│   │   ├── serializers.py            # Сериализаторы пользователей
+│   │   ├── urls.py                   # URL для работы с пользователями
+│   │   ├── views.py                  # View для операций с пользователями
+│   │   └── tests/                    # Тесты пользовательского функционала
 │   │       ├── test_models.py
 │   │       └── test_views.py
 │   │
-│   ├── manage.py
-│   ├── requirements/                 # ! Разделенные зависимости
-│   │   ├── base.txt                  # Django, drf, psycopg2
-│   │   ├── dev.txt                   # pytest, debug-toolbar
-│   │   └── prod.txt                  # gunicorn, whitenoise
-│   ├── docs/
-│   │   ├── schemas.py                # Кастомные схемы
-│   │   └── config.py                 # Настройки drf-yasg/spectacular
-│   ├── Dockerfile                    # Многоступенчатая сборка
-│   └── .dockerignore                 # ! Игнорируемые файлы в Docker
+│   ├── docs/                         # Документация API
+│   │   ├── schemas.py                # Схемы для документации
+│   │   └── docs_config.py            # Конфигурация Swagger/Redoc
+│   │
+│   ├── requirements/                 # Зависимости проекта
+│   │   ├── base.txt                  # Основные зависимости
+│   │   ├── dev.txt                   # Для разработки (тесты, отладка)
+│   │   └── prod.txt                  # Для продакшена (оптимизации)
+│   │
+│   ├── manage.py                     # Утилита управления Django
+│   ├── Dockerfile                    # Конфигурация Docker-образа
+│   └── .dockerignore                 # Исключения для Docker-сборки
 │
-├── nginx/
-│   ├── nginx.conf                    # Конфиг для Django + статики
-│   └── Dockerfile                    # Оптимизированный образ
+├── nginx/                            # Конфигурация Nginx
+│   ├── nginx.conf                    # Основной конфиг Nginx
+│   └── Dockerfile                    # Сборка Nginx-образа
 │
-├── .github/workflows/                # ! CI/CD
-│   └── ci-cd.yml                     # Тесты + деплой
+├── .github/workflows/                # CI/CD автоматизация
+│   └── ci-cd.yml                     # Конфигурация GitHub Actions
 │
-├── docker-compose.yml                # Dev и Prod конфигурации
-├── docker-compose.prod.yml           # ! Отдельный для продакшена
-├── .env.example                      # Шаблон переменных
-├── .gitignore
-└── README.md                         # Инструкции + диаграммы API
+├── docker-compose.yml                # Конфигурация для разработки
+├── docker-compose.prod.yml           # Конфигурация для продакшена
+├── .env.example                      # Пример переменных окружения
+├── .gitignore                        # Игнорируемые файлы Git
+└── README.md                         # Основная документация проекта
 ```
 Важная информация:
 Закройте лишние эндпоинты (например, /admin/ только для вашего IP).
+
+## Использование API
+
+Добавьте ключ в заголовок запроса:
+```bash
+curl -X GET http://ваш-сервер/api/data/ \
+  -H "X-API-KEY: your_secret_key_123"
+```
