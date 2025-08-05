@@ -6,9 +6,9 @@
 	- Отправка email с токеном для сброса пароля
 
 #### Технологии
-**API**: Django REST Framework
-**Контейнеризация**: Docker и Docker Compose
-**База данных**: PostgreSQL
-**База данных тестирование**: liteSQL 
-**CI/CD деплой**: GitHub Actions
-**Авторизация**: JWT (JSON Web Tokens) и OAuth 2.0
+- **API**: Django REST Framework
+- **Контейнеризация**: Docker и Docker Compose
+- **База данных**: PostgreSQL
+- **База данных тестирование**: liteSQL 
+- **CI/CD деплой**: GitHub Actions
+- **Авторизация**: JWT (JSON Web Tokens) и OAuth 2.0
