@@ -1,1 +1,30 @@
+# Файлы окружения и секреты
+.env
+*.env
+secrets.json
 
+# Системные файлы
+.DS_Store
+__pycache__/
+*.py[cod]
+*.swp
+
+# Git
+.git/
+.gitignore
+
+# Логи и временные файлы
+*.log
+*.tmp
+
+# Статика и медиа (если они генерируются при сборке)
+staticfiles/
+media/
+
+# Тесты и документация
+tests/
+docs/
+
+# IDE
+.idea/
+.vscode/
