@@ -1,9 +1,10 @@
-#### Авторизация и аутентификация
-- **Способы регистрации и входа:**
+### Авторизация и аутентификация
+
+1. **Способы регистрации и входа:**
     - Пароль и электронная почта
     - Через сервисы: Google, Yandex
-- **Восстановление доступа:**
-	- Отправка email с токеном для сброса пароля
+2. **Восстановление доступа:**
+    - Отправка email с токеном для сброса пароля
 
 #### Технологии
 - **API**: Django REST Framework
@@ -12,7 +13,8 @@
 - **База данных**: PostgreSQL
 - **База данных для тестирования**: SQLite 
 - **CI/CD деплой**: GitHub Actions
-- **Документирование API**: Swagger
+- **Документирование API**: Swagger/Redoc
+- **Тестирование**: Pytest
 - **Аутентификация/авторизация**: OAuth 2.0 (Google, GitHub, Yandex и др.) и JWT (JSON Web Tokens)
 - **Продакшен-серверы**: Nginx/Gunicorn
 
@@ -62,7 +64,9 @@ auth_django/                          # Корень проекта
 │   │   ├── base.txt                  # Django, drf, psycopg2
 │   │   ├── dev.txt                   # pytest, debug-toolbar
 │   │   └── prod.txt                  # gunicorn, whitenoise
-│   │
+│   ├── docs/
+│   │   ├── schemas.py                # Кастомные схемы
+│   │   └── config.py                 # Настройки drf-yasg/spectacular
 │   ├── Dockerfile                    # Многоступенчатая сборка
 │   └── .dockerignore                 # ! Игнорируемые файлы в Docker
 │
