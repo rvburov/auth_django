@@ -1,36 +1,51 @@
 import os
 from pathlib import Path
-from dotenv import load_dotenv
+from decouple import config  # Импорт библиотеки для управления переменными окружения
 
-load_dotenv()
-
+# Определяем базовую директорию проекта
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-default-key')
+# Секретный ключ приложения, считываемый из переменных окружения
+SECRET_KEY = config('SECRET_KEY')
 
-DEBUG = os.getenv('DEBUG', 'False') == 'True'
+# Режим отладки: включается/выключается через переменные окружения
+DEBUG = config('DEBUG', default=False, cast=bool)
 
-ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Разрешенные хосты для развертывания проекта
+ALLOWED_HOSTS = config('ALLOWED_HOSTS', default='').split(',')
 
-INSTALLED_APPS = [
+# Доверенные источники для CSRF-токенов
+CSRF_TRUSTED_ORIGINS = config('CSRF_TRUSTED_ORIGINS', default='').split(',')
+
+# Список приложений Django (встроенные)
+DJANGO_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    
-    # Third-party apps
-    'rest_framework',
-    'rest_framework_simplejwt',
-    
-    # Local apps
+]
+
+# Локальные приложения проекта (созданные пользователем)
+LOCAL_APPS = [
     'authentication.oauth',
     'authentication.jwt',
     'authentication.api_keys',
     'users',
 ]
 
+# Сторонние приложения, установленные через pip
+THIRD_PARTY_APPS = [
+    'rest_framework',
+    'rest_framework_simplejwt',
+    'debug_toolbar',
+]
+
+# Полный список установленных приложений
+INSTALLED_APPS = DJANGO_APPS + LOCAL_APPS + THIRD_PARTY_APPS
+
+# Список middleware для обработки запросов/ответов
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -39,10 +54,13 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
+# Корневая конфигурация URL
 ROOT_URLCONF = 'config.urls'
 
+# Настройки шаблонов Django
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -59,19 +77,30 @@ TEMPLATES = [
     },
 ]
 
+# WSGI-приложение
 WSGI_APPLICATION = 'config.wsgi.application'
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('POSTGRES_DB'),
-        'USER': os.getenv('POSTGRES_USER'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD'),
-        'HOST': os.getenv('POSTGRES_HOST', 'localhost'),
-        'PORT': os.getenv('POSTGRES_PORT', '5432'),
+# Настройки базы данных (SQLite по умолчанию, PostgreSQL через переменные окружения)
+if config('USE_POSTGRESQL', default=False, cast=bool):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': config('POSTGRES_DB'),
+            'USER': config('POSTGRES_USER'),
+            'PASSWORD': config('POSTGRES_PASSWORD'),
+            'HOST': config('POSTGRES_HOST', default='localhost'),
+            'PORT': config('POSTGRES_PORT', default='5432'),
+        }
     }
-}
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
+    }
 
+# Валидаторы паролей
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
@@ -87,20 +116,32 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+# Язык и часовой пояс проекта
+LANGUAGE_CODE = 'ru-RU'
 TIME_ZONE = 'UTC'
+
+# Включение интернационализации и поддержки часовых зон
 USE_I18N = True
 USE_TZ = True
 
-STATIC_URL = 'static/'
-STATIC_ROOT = os.path.join(BASE_DIR, 'static')
-
-MEDIA_URL = 'media/'
-MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
+# Автоматическое поле первичного ключа по умолчанию
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-AUTH_USER_MODEL = 'users.User'
+# Настройки для статических файлов
+STATIC_URL = '/static/'                               # URL для статических файлов
+STATICFILES_DIRS = [BASE_DIR / 'static',]             # Директории со статическими файлами
+STATIC_ROOT = BASE_DIR / 'staticfiles'                # Директория для сбора статических файлов
+
+# Настройки для медиа-файлов
+MEDIA_URL = '/media/'  # URL для медиа-файлов
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')          # Директория для хранения медиа-файлов
+
+# Внутренние IP-адреса для отладки
+if DEBUG:
+    INTERNAL_IPS = ['127.0.0.1']
+
+# Настройки пользовательской модели пользователя
+AUTH_USER_MODEL = 'users.CustomUser'
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
@@ -111,7 +152,7 @@ REST_FRAMEWORK = {
     ),
 }
 
-# JWT Settings
+# JWT настройки
 from datetime import timedelta
 
 SIMPLE_JWT = {
@@ -120,16 +161,19 @@ SIMPLE_JWT = {
     'ROTATE_REFRESH_TOKENS': True,
 }
 
-# OAuth Settings
-GOOGLE_OAUTH_CLIENT_ID = os.getenv('GOOGLE_OAUTH_CLIENT_ID')
-GOOGLE_OAUTH_CLIENT_SECRET = os.getenv('GOOGLE_OAUTH_CLIENT_SECRET')
-YANDEX_OAUTH_CLIENT_ID = os.getenv('YANDEX_OAUTH_CLIENT_ID')
-YANDEX_OAUTH_CLIENT_SECRET = os.getenv('YANDEX_OAUTH_CLIENT_SECRET')
+# OAuth настройки
+GOOGLE_OAUTH_CLIENT_ID = config('GOOGLE_OAUTH_CLIENT_ID')
+GOOGLE_OAUTH_CLIENT_SECRET = config('GOOGLE_OAUTH_CLIENT_SECRET')
+YANDEX_OAUTH_CLIENT_ID = config('YANDEX_OAUTH_CLIENT_ID')
+YANDEX_OAUTH_CLIENT_SECRET = config('YANDEX_OAUTH_CLIENT_SECRET')
 
-# Email settings
-EMAIL_BACKEND = os.getenv('EMAIL_BACKEND', 'django.core.mail.backends.smtp.EmailBackend')
-EMAIL_HOST = os.getenv('EMAIL_HOST')
-EMAIL_PORT = os.getenv('EMAIL_PORT')
-EMAIL_USE_TLS = os.getenv('EMAIL_USE_TLS', 'True') == 'True'
-EMAIL_HOST_USER = os.getenv('EMAIL_HOST_USER')
-EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
+# Настройки email 
+EMAIL_BACKEND = config('EMAIL_BACKEND')               # Используемый бекенд
+EMAIL_HOST = config('EMAIL_HOST')                     # SMTP-сервер
+EMAIL_PORT = config('EMAIL_PORT', cast=int)           # Порт для SMTP
+EMAIL_USE_SSL = config('EMAIL_USE_SSL', cast=bool)    # Использование SSL
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')           # Логин SMTP
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')   # Пароль SMTP
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER                  # Email отправителя
+SERVER_EMAIL = EMAIL_HOST_USER                        # Email для системных уведомлений
+EMAIL_ADMIN = EMAIL_HOST_USER                         # Email администратора
