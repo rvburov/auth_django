@@ -20,71 +20,68 @@
 
 #### Структура проекта
 ```
-auth_django/                          # Корневая директория проекта
+auth_project/                          # Корневая директория проекта
 │
 ├── backend/                          # Backend-часть на Django
 │   │
-│   ├── auth_config/                  # Основной конфигурационный модуль Django
-│   │   │
-│   │   ├── settings/                 # Настройки проекта (разделены по средам)
-│   │   │   ├── base.py               # Общие настройки для всех сред
-│   │   │   ├── development.py        # Настройки для разработки (DEBUG=True)
-│   │   │   └── production.py         # Продакшен-настройки (DEBUG=False)
-│   │   │
+│   ├── config/                       # Основной конфигурационный модуль Django
+│   │   ├── settings.py               # Настройки проекта
 │   │   ├── urls.py                   # Корневая конфигурация URL
-│   │   └── wsgi.py                   # WSGI-конфигурация для развертывания
+│   │   ├── asgi.py                   # ASGI-конфигурация
+│   │   ├── wsgi.py                   # WSGI-конфигурация
+│   │   └── logging.py                # Конфигурация логов
 │   │
-│   ├── authentication/               # Приложение аутентификации
+│   ├── authentication/               # Модули аутентификации (основная бизнес-логика)
 │   │   │
-│   │   ├── oauth/                    # Модуль OAuth аутентификации
-│   │   │   ├── backends.py           # Кастомные бэкенды аутентификации
-│   │   │   ├── providers.py          # Конфигурации OAuth-провайдеров
+│   │   ├── oauth/                    # Модуль OAuth аутентификации (google и yandex)
+│   │   │   ├── oauth_config.py       # Конфигурации OAuth-провайдеров
 │   │   │   ├── serializers.py        # Сериализаторы для OAuth
 │   │   │   ├── urls.py               # Маршруты OAuth (/oauth/google/ и др.)
 │   │   │   ├── views.py              # View-классы для OAuth
+│   │   │   ├── models.py             # Модель для OAuth
+│   │   │   ├── admin.py              # Админка для OAuth
+│   │   │   ├── providers/            # Отдельные провайдеры
+│   │   │   │   ├── google.py
+│   │   │   │   └── yandex.py
 │   │   │   └── tests/                # Тесты OAuth-функционала
-│   │   │       ├── test_backends.py
+│   │   │       ├── test_serializers.py
 │   │   │       └── test_views.py
 │   │   │
 │   │   ├── jwt/                      # Модуль JWT аутентификации
+│   │   │   ├── jwt_config.py         # Конфигурации JWT-токенов
 │   │   │   ├── serializers.py        # Сериализаторы JWT-токенов
 │   │   │   ├── urls.py               # Маршруты JWT (/jwt/create/ и др.)
-│   │   │   ├── views.py              # View-классы для JWT
+│   │   │   ├── views.py              # View-классы для работы с токенами JWT
+│   │   │   ├── admin.py              # ← опционально для BlacklistedToken
 │   │   │   └── tests/                # Тесты JWT-функционала
 │   │   │       ├── test_serializers.py
 │   │   │       └── test_views.py
 │   │   │
-│   │   ├── services/                 # Сервисный слой для бизнес-логики
-│   │   │   ├── auth_services.py      # Сервисы аутентификации
-│   │   │   └── token_services.py     # Сервисы работы с токенами
-│   │   │
-│   │   ├── middleware.py             # Проверка API-ключа для доступа разработчиков
-│   │   ├── admin.py                  # Админ-панель для моделей
-│   │   ├── apps.py                   # Конфигурация приложения
-│   │   ├── models.py                 # Модели для токенов и сессий
-│   │   ├── urls.py                   # Основные URL аутентификации
-│   │   └── views.py                  # Общие view (выход из системы и др.)
+│   │   └── api_keys/                 # Модуль API-ключа для доступа разработчиков размещен в .env
+│   │       └── views.py              # View-классы для API-ключа
 │   │
 │   ├── users/                        # Приложение работы с пользователями
 │   │   ├── admin.py                  # Админка для пользователей
-│   │   ├── apps.py                   # Конфигурация приложения
 │   │   ├── models.py                 # Кастомная модель пользователя
 │   │   ├── serializers.py            # Сериализаторы пользователей
 │   │   ├── urls.py                   # URL для работы с пользователями
 │   │   ├── views.py                  # View для операций с пользователями
 │   │   └── tests/                    # Тесты пользовательского функционала
-│   │       ├── test_models.py
+│   │       ├── test_serializers.py
 │   │       └── test_views.py
 │   │
+│   ├── utils/                        # Общие утилиты
+│   │   └── email.py                  # Отправка email если забыл пароль 
+│   │   
 │   ├── docs/                         # Документация API
 │   │   ├── schemas.py                # Схемы для документации
 │   │   └── docs_config.py            # Конфигурация Swagger/Redoc
 │   │
-│   ├── requirements/                 # Зависимости проекта
-│   │   ├── base.txt                  # Основные зависимости
-│   │   ├── dev.txt                   # Для разработки (тесты, отладка)
-│   │   └── prod.txt                  # Для продакшена (оптимизации)
+│   ├── static/                       # Статические данные
 │   │
+│   ├── media/                        # Изображения
+│   │
+│   ├── requirements.txt              # Зависимости проекта
 │   ├── manage.py                     # Утилита управления Django
 │   ├── Dockerfile                    # Конфигурация Docker-образа
 │   └── .dockerignore                 # Исключения для Docker-сборки
