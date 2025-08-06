@@ -1,1 +1,81 @@
+# Django
+*.log
+*.pot
+*.pyc
+__pycache__/
+local_settings.py
+db.sqlite3
+media/
 
+# Backup files
+*.bak
+*.swp
+*~
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Virtual environment
+venv/
+.env/
+env/
+.venv/
+
+# Node.js
+node_modules/
+npm-debug.log*
+
+# Static files
+/staticfiles/
+/static/
+
+# Database
+*.db
+*.sqlite
+
+# macOS
+.DS_Store
+
+# Docker
+docker-compose.override.yml
+
+# Testing
+.coverage
+htmlcov/
+
+# Python
+*.py[cod]
+*$py.class
+.python-version
+
+# Celery
+celerybeat-schedule.*
+celerybeat.pid
+
+# Environments
+.env
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# PyCharm
+.idea/
+
+# VS Code
+.vscode/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# PyTest
+.pytest_cache/
+
+# Logs
+logs/
+*.log
