@@ -15,7 +15,7 @@
 - **CI/CD деплой**: GitHub Actions
 - **Документирование API**: Swagger/Redoc
 - **Тестирование**: Pytest
-- **Аутентификация/авторизация**: OAuth 2.0 (Google, GitHub, Yandex и др.) и JWT (JSON Web Tokens)
+- **Аутентификация/авторизация**: OAuth 2.0 (Google и Yandex) и JWT (JSON Web Tokens)
 - **Продакшен-серверы**: Nginx/Gunicorn
 
 #### Структура проекта
