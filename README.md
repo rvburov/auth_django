@@ -29,6 +29,7 @@ auth_django/                               # Корневая директори
 │   │   ├── urls.py                        # Корневая конфигурация URL
 │   │   ├── asgi.py                        # ASGI-конфигурация
 │   │   ├── wsgi.py                        # WSGI-конфигурация
+│   │   ├── api_keys.py                    # View для определения API-ключа для доступа разработчиков к API размещенного в .env
 │   │   └── logging.py                     # Конфигурация логов
 │   │
 │   ├── authentication/                    # Модули аутентификации (основная бизнес-логика)
@@ -55,18 +56,15 @@ auth_django/                               # Корневая директори
 │   │   │       ├── test_serializers.py
 │   │   │       └── test_views.py
 │   │   │
-│   │   ├── jwt/                           # Модуль JWT аутентификации
-│   │   │   ├── jwt_config.py              # Конфигурации JWT-токенов
-│   │   │   ├── serializers.py             # Сериализаторы JWT-токенов
-│   │   │   ├── urls.py                    # Маршруты JWT (/jwt/create/ и др.)
-│   │   │   ├── views.py                   # View-классы для работы с токенами JWT
-│   │   │   ├── admin.py                   # ← опционально для BlacklistedToken
-│   │   │   └── tests/                     # Тесты JWT-функционала
-│   │   │       ├── test_serializers.py
-│   │   │       └── test_views.py
-│   │   │
-│   │   └── api_keys/                      # Модуль API-ключа для доступа разработчиков размещен в .env
-│   │       └── views.py                   # View-классы для API-ключа
+│   │   └── jwt/                           # Модуль JWT аутентификации
+│   │       ├── jwt_config.py              # Конфигурации JWT-токенов
+│   │       ├── serializers.py             # Сериализаторы JWT-токенов
+│   │       ├── urls.py                    # Маршруты JWT (/jwt/create/ и др.)
+│   │       ├── views.py                   # View-классы для работы с токенами JWT
+│   │       ├── admin.py                   # ← опционально для BlacklistedToken
+│   │       └── tests/                     # Тесты JWT-функционала
+│   │           ├── test_serializers.py
+│   │           └── test_views.py
 │   │
 │   ├── users/                             # Приложение работы с пользователями
 │   │   ├── admin.py                       # Админка для пользователей
