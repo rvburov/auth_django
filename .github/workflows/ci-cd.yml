@@ -1,1 +1,104 @@
+name: Django CI/CD Pipeline
 
+on:
+  push:
+    branches: [ main, dev ]  # Запускать при пуше в main или dev
+  pull_request:
+    branches: [ main, dev ]  # Запускать при PR в main или dev
+
+env:
+  DJANGO_SETTINGS_MODULE: config.settings
+  PYTHON_VERSION: "3.10"  # Версия Python
+  POSTGRES_DB: test_db
+  POSTGRES_USER: test_user
+  POSTGRES_PASSWORD: test_pass
+  POSTGRES_HOST: localhost
+  POSTGRES_PORT: 5432
+
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_DB: ${{ env.POSTGRES_DB }}
+          POSTGRES_USER: ${{ env.POSTGRES_USER }}
+          POSTGRES_PASSWORD: ${{ env.POSTGRES_PASSWORD }}
+        ports:
+          - "5432:5432"
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run migrations
+        run: python manage.py migrate
+
+      - name: Run tests
+        run: python manage.py test
+
+  lint:
+    name: Lint Code
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python ${{ env.PYTHON_VERSION }}
+        uses: actions/setup-python@v4
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+
+      - name: Install linting tools
+        run: |
+          pip install black flake8 isort
+
+      - name: Run Black (code formatting)
+        run: black --check .
+
+      - name: Run Flake8 (PEP8 checks)
+        run: flake8 .
+
+      - name: Run isort (imports sorting)
+        run: isort --check-only .
+
+  deploy:
+    name: Deploy to Server
+    needs: [ test, lint ]  # Зависит от успешного прохождения тестов и линтинга
+    if: github.ref == 'refs/heads/main'  # Деплой только из main
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+
+      - name: Deploy via SSH
+        run: |
+          ssh -o StrictHostKeyChecking=no \
+              user@your-server.com \
+              "cd /path/to/project && \
+               git pull origin main && \
+               docker-compose -f docker-compose.prod.yml up -d --build"
