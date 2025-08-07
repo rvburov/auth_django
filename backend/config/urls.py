@@ -11,6 +11,6 @@ urlpatterns = [
     # Users URLs
     path('users/', include('users.urls')),
     
-    # API Docs
-    path('docs/', include('docs.urls')),
+    # API документация
+    path('docs/', include('docs.docs_config')),
 ]
