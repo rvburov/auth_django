@@ -1,20 +1,25 @@
 from django.contrib import admin
 from django.urls import path, include
-from config.api_keys import APIKeyTestView
+from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView, SpectacularRedocView
+from config.api_keys import APIKeyTestView  # Импорт API Key View
 
 urlpatterns = [
+    # Админка
     path('admin/', admin.site.urls),
     
-    # Authentication URLs
-    path('auth/', include('authentication.jwt.urls')),
-    path('oauth/', include('authentication.oauth.urls')),
+    # Аутентификация
+    path('api/auth/', include('authentication.custom_auth.urls')),  # Кастомная аутентификация
+    path('api/auth/jwt/', include('authentication.jwt.urls')),     # JWT эндпоинты
+    path('api/auth/oauth/', include('authentication.oauth.urls')), # OAuth эндпоинты
     
-    # Users URLs
-    path('users/', include('users.urls')),
+    # Пользователи
+    path('api/users/', include('users.urls')),
     
-    # API документация
-    path('docs/', include('docs.docs_config')),
-
-    # Защищённый эндпоинт с API-ключом
-    path('api/secure/data/', APIKeyTestView.as_view(), name='secure-api'),
+    # Защищённый API-эндпоинт с ключом
+    path('api/secure-endpoint/', APIKeyTestView.as_view(), name='secure-api'),
+    
+    # Документация API
+    path('api/schema/', SpectacularAPIView.as_view(), name='schema'),
+    path('api/docs/', SpectacularSwaggerView.as_view(url_name='schema'), name='swagger-ui'),
+    path('api/redoc/', SpectacularRedocView.as_view(url_name='schema'), name='redoc'),
 ]
