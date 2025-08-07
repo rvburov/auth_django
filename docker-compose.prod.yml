@@ -1,1 +1,65 @@
+version: '3.8'
 
+services:
+  web:
+    build: .
+    command: gunicorn --bind 0.0.0.0:8000 --workers 4 --threads 2 config.wsgi
+    restart: unless-stopped
+    env_file:
+      - .env.prod
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+    expose:
+      - 8000
+    depends_on:
+      - db
+      - redis
+    networks:
+      - app-network
+
+  db:
+    image: postgres:13
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_HOST_AUTH_METHOD: trust
+    networks:
+      - app-network
+
+  redis:
+    image: redis:6
+    restart: unless-stopped
+    volumes:
+      - redis_data:/data
+    networks:
+      - app-network
+
+  nginx:
+    build: ./nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - static_volume:/app/staticfiles
+      - media_volume:/app/media
+      - ./nginx/ssl:/etc/nginx/ssl
+    depends_on:
+      - web
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  static_volume:
+  media_volume:
