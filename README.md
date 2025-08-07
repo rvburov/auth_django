@@ -36,7 +36,7 @@ auth_django/                               # Корневая директори
 │   │   ├── custom_auth/                   # Кастомная аутентификация (логин/логаут) 
 │   │   │   ├── urls.py                    # Маршруты: /login/, /logout/ и т.д.
 │   │   │   ├── views.py                   # CustomLoginView, CustomLogoutView, CustomPasswordResetView
-│   │   │   ├── validators.py              # Кастомные валидаторы
+│   │   │   ├── validators.py              # Валидаторы паролей/логинов
 │   │   │   └── tests/                     # Тесты custom_auth-функционала
 │   │   │       ├── test_serializers.py
 │   │   │       └── test_views.py
