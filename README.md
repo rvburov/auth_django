@@ -20,84 +20,93 @@
 
 #### Структура проекта
 ```
-auth_django/                          # Корневая директория проекта
+auth_django/                               # Корневая директория проекта
 │
-├── backend/                          # Backend-часть на Django
+├── backend/                               # Backend-часть на Django
 │   │
-│   ├── config/                       # Основной конфигурационный модуль Django
-│   │   ├── settings.py               # Настройки проекта
-│   │   ├── urls.py                   # Корневая конфигурация URL
-│   │   ├── asgi.py                   # ASGI-конфигурация
-│   │   ├── wsgi.py                   # WSGI-конфигурация
-│   │   └── logging.py                # Конфигурация логов
+│   ├── config/                            # Основной конфигурационный модуль Django
+│   │   ├── settings.py                    # Настройки проекта
+│   │   ├── urls.py                        # Корневая конфигурация URL
+│   │   ├── asgi.py                        # ASGI-конфигурация
+│   │   ├── wsgi.py                        # WSGI-конфигурация
+│   │   └── logging.py                     # Конфигурация логов
 │   │
-│   ├── authentication/               # Модули аутентификации (основная бизнес-логика)
+│   ├── authentication/                    # Модули аутентификации (основная бизнес-логика)
 │   │   │
-│   │   ├── oauth/                    # Модуль OAuth аутентификации (google и yandex)
-│   │   │   ├── oauth_config.py       # Конфигурации OAuth-провайдеров
-│   │   │   ├── serializers.py        # Сериализаторы для OAuth
-│   │   │   ├── urls.py               # Маршруты OAuth (/oauth/google/ и др.)
-│   │   │   ├── views.py              # View-классы для OAuth
-│   │   │   ├── models.py             # Модель для OAuth
-│   │   │   ├── admin.py              # Админка для OAuth
-│   │   │   ├── providers/            # Отдельные провайдеры
+│   │   ├── basic_auth/                    # Базовая аутентификация (логин/логаут) 
+│   │   │   ├── urls.py                    # Маршруты: /login/, /logout/ и т.д.
+│   │   │   ├── views.py                   # LoginView, LogoutView, PasswordResetView
+│   │   │   ├── validators.py              # Кастомные валидаторы
+│   │   │   └── tests/                     # Тесты basic_auth-функционала
+│   │   │       ├── test_serializers.py
+│   │   │       └── test_views.py
+│   │   │
+│   │   ├── oauth/                         # Модуль OAuth аутентификации (google и yandex)
+│   │   │   ├── oauth_config.py            # Конфигурации OAuth-провайдеров
+│   │   │   ├── serializers.py             # Сериализаторы для OAuth
+│   │   │   ├── urls.py                    # Маршруты OAuth (/oauth/google/ и др.)
+│   │   │   ├── views.py                   # View-классы для OAuth
+│   │   │   ├── models.py                  # Модель для OAuth
+│   │   │   ├── admin.py                   # Админка для OAuth
+│   │   │   ├── providers/                 # Отдельные провайдеры
 │   │   │   │   ├── google.py
 │   │   │   │   └── yandex.py
-│   │   │   └── tests/                # Тесты OAuth-функционала
+│   │   │   └── tests/                     # Тесты OAuth-функционала
 │   │   │       ├── test_serializers.py
 │   │   │       └── test_views.py
 │   │   │
-│   │   ├── jwt/                      # Модуль JWT аутентификации
-│   │   │   ├── jwt_config.py         # Конфигурации JWT-токенов
-│   │   │   ├── serializers.py        # Сериализаторы JWT-токенов
-│   │   │   ├── urls.py               # Маршруты JWT (/jwt/create/ и др.)
-│   │   │   ├── views.py              # View-классы для работы с токенами JWT
-│   │   │   ├── admin.py              # ← опционально для BlacklistedToken
-│   │   │   └── tests/                # Тесты JWT-функционала
+│   │   ├── jwt/                           # Модуль JWT аутентификации
+│   │   │   ├── jwt_config.py              # Конфигурации JWT-токенов
+│   │   │   ├── serializers.py             # Сериализаторы JWT-токенов
+│   │   │   ├── urls.py                    # Маршруты JWT (/jwt/create/ и др.)
+│   │   │   ├── views.py                   # View-классы для работы с токенами JWT
+│   │   │   ├── admin.py                   # ← опционально для BlacklistedToken
+│   │   │   └── tests/                     # Тесты JWT-функционала
 │   │   │       ├── test_serializers.py
 │   │   │       └── test_views.py
 │   │   │
-│   │   └── api_keys/                 # Модуль API-ключа для доступа разработчиков размещен в .env
-│   │       └── views.py              # View-классы для API-ключа
+│   │   └── api_keys/                      # Модуль API-ключа для доступа разработчиков размещен в .env
+│   │       └── views.py                   # View-классы для API-ключа
 │   │
-│   ├── users/                        # Приложение работы с пользователями
-│   │   ├── admin.py                  # Админка для пользователей
-│   │   ├── models.py                 # Кастомная модель пользователя
-│   │   ├── serializers.py            # Сериализаторы пользователей
-│   │   ├── urls.py                   # URL для работы с пользователями
-│   │   ├── views.py                  # View для операций с пользователями
-│   │   └── tests/                    # Тесты пользовательского функционала
+│   ├── users/                             # Приложение работы с пользователями
+│   │   ├── admin.py                       # Админка для пользователей
+│   │   ├── models.py                      # Кастомная модель пользователя
+│   │   ├── serializers.py                 # Сериализаторы пользователей
+│   │   ├── urls.py                        # URL для работы с пользователями
+│   │   ├── views.py                       # View для операций с пользователями
+│   │   ├── validators.py                  # Кастомные валидаторы
+│   │   └── tests/                         # Тесты пользовательского функционала
 │   │       ├── test_serializers.py
 │   │       └── test_views.py
 │   │
-│   ├── utils/                        # Общие утилиты
-│   │   └── email.py                  # Отправка email если забыл пароль 
+│   ├── utils/                             # Общие утилиты
+│   │   └── email.py                       # Отправка email если забыл пароль 
 │   │   
-│   ├── docs/                         # Документация API
-│   │   ├── schemas.py                # Схемы для документации
-│   │   └── docs_config.py            # Конфигурация Swagger/Redoc
+│   ├── docs/                              # Документация API
+│   │   ├── schemas.py                     # Схемы для документации
+│   │   └── docs_config.py                 # Конфигурация Swagger/Redoc
 │   │
-│   ├── static/                       # Статические данные
+│   ├── static/                            # Статические данные
 │   │
-│   ├── media/                        # Изображения
+│   ├── media/                             # Изображения
 │   │
-│   ├── requirements.txt              # Зависимости проекта
-│   ├── manage.py                     # Утилита управления Django
-│   ├── Dockerfile                    # Конфигурация Docker-образа
-│   └── .dockerignore                 # Исключения для Docker-сборки
+│   ├── requirements.txt                   # Зависимости проекта
+│   ├── manage.py                          # Утилита управления Django
+│   ├── Dockerfile                         # Конфигурация Docker-образа
+│   └── .dockerignore                      # Исключения для Docker-сборки
 │
-├── nginx/                            # Конфигурация Nginx
-│   ├── nginx.conf                    # Основной конфиг Nginx
-│   └── Dockerfile                    # Сборка Nginx-образа
+├── nginx/                                 # Конфигурация Nginx
+│   ├── nginx.conf                         # Основной конфиг Nginx
+│   └── Dockerfile                         # Сборка Nginx-образа
 │
-├── .github/workflows/                # CI/CD автоматизация
-│   └── ci-cd.yml                     # Конфигурация GitHub Actions
+├── .github/workflows/                     # CI/CD автоматизация
+│   └── ci-cd.yml                          # Конфигурация GitHub Actions
 │
-├── docker-compose.yml                # Конфигурация для разработки
-├── docker-compose.prod.yml           # Конфигурация для продакшена
-├── .env.example                      # Пример переменных окружения
-├── .gitignore                        # Игнорируемые файлы Git
-└── README.md                         # Основная документация проекта
+├── docker-compose.yml                     # Конфигурация для разработки
+├── docker-compose.prod.yml                # Конфигурация для продакшена
+├── .env.example                           # Пример переменных окружения
+├── .gitignore                             # Игнорируемые файлы Git
+└── README.md                              # Основная документация проекта
 ```
 Важная информация:
 Закройте лишние эндпоинты (например, /admin/ только для вашего IP).
