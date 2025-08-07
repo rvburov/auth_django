@@ -32,7 +32,7 @@ LOCAL_APPS = [
     'authentication.oauth',
     'authentication.jwt',
     'authentication.api_keys',
-    'authentication.basic_auth',
+    'authentication.custom_auth',
     'users',
 ]
 
