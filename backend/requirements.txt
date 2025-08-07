@@ -1,3 +1,67 @@
-drf-spectacular==0.27.1             # Инструмент для автоматической генерации интерактивной документации API в формате OpenAPI 3.0 
-django-allauth==0.58.2              # Социальная авторизация (через Google, GitHub, Facebook и другие провайдеры)
-django_debug_toolbar==3.8.1         # Инструмент для отладки и профилирования Django-приложений
+# ===== ОСНОВНЫЕ БИБЛИОТЕКИ =====
+
+# Ядро Django (веб-фреймворк)
+Django==5.0.6
+
+# Django REST Framework (API-инструменты)
+djangorestframework==3.15.1
+
+# JWT-аутентификация для DRF
+django-rest-framework-simplejwt==5.3.1
+
+# Генерация OpenAPI-документации (Swagger/Redoc)
+drf-spectacular==0.27.1
+
+# Социальная аутентификация (OAuth: Google, Yandex и др.)
+django-allauth==0.58.2
+
+# Панель отладки для разработки
+django-debug-toolbar==3.8.1
+
+# Загрузка переменных окружения из .env
+python-dotenv==1.0.1
+
+# Адаптер PostgreSQL для Django
+psycopg2-binary==2.9.9
+
+
+# ===== ВСПОМОГАТЕЛЬНЫЕ УТИЛИТЫ =====
+
+# Работа с JWT-токенами (низкоуровневый доступ)
+pyjwt==2.8.0
+
+# HTTP-запросы (для OAuth-провайдеров)
+requests==2.31.0
+
+# CORS-заголовки для API
+django-cors-headers==4.3.1
+
+# Обслуживание статики в продакшене
+whitenoise==6.6.0
+
+# Продакшен-сервер для Django
+gunicorn==21.2.0
+
+
+# ===== ТЕСТИРОВАНИЕ =====
+
+# Фреймворк для тестирования
+pytest==8.0.2
+
+# Интеграция pytest с Django
+pytest-django==4.7.0
+
+# Генерация тестовых данных
+factory-boy==3.3.0
+
+
+# ===== ЛИНТИНГ И ФОРМАТИРОВАНИЕ =====
+
+# Автоформатирование кода (PEP8)
+black==24.3.0
+
+# Проверка стиля кода
+flake8==7.0.0
+
+# Сортировка импортов
+isort==5.13.2
