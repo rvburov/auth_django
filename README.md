@@ -33,11 +33,11 @@ auth_django/                               # Корневая директори
 │   │
 │   ├── authentication/                    # Модули аутентификации (основная бизнес-логика)
 │   │   │
-│   │   ├── basic_auth/                    # Базовая аутентификация (логин/логаут) 
+│   │   ├── custom_auth/                   # Кастомная аутентификация (логин/логаут) 
 │   │   │   ├── urls.py                    # Маршруты: /login/, /logout/ и т.д.
-│   │   │   ├── views.py                   # LoginView, LogoutView, PasswordResetView
+│   │   │   ├── views.py                   # CustomLoginView, CustomLogoutView, CustomPasswordResetView
 │   │   │   ├── validators.py              # Кастомные валидаторы
-│   │   │   └── tests/                     # Тесты basic_auth-функционала
+│   │   │   └── tests/                     # Тесты custom_auth-функционала
 │   │   │       ├── test_serializers.py
 │   │   │       └── test_views.py
 │   │   │
