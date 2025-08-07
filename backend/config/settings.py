@@ -120,6 +120,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': config('DJANGO_LOG_LEVEL', default='INFO'),
+            'propagate': False,
+        },
+    },
+}
+
 # Язык и часовой пояс проекта
 LANGUAGE_CODE = 'ru-RU'
 TIME_ZONE = 'UTC'
@@ -130,6 +151,12 @@ USE_TZ = True
 
 # Автоматическое поле первичного ключа по умолчанию
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Настройка Debug Toolbar
+if DEBUG:
+    DEBUG_TOOLBAR_CONFIG = {
+        'SHOW_TOOLBAR_CALLBACK': lambda request: True,
+    }
 
 # Настройки для статических файлов
 STATIC_URL = '/static/'                               # URL для статических файлов
@@ -185,13 +212,10 @@ SIMPLE_JWT = {
 }
 
 # ===== CORS Настройки =====
-CORS_ALLOWED_ORIGINS = [
-    "http://localhost:3000",  # React/Vue dev server
-    "http://127.0.0.1:3000",
-    "https://domain.com",
-]
-
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOWED_ORIGINS = config(
+    'CORS_ALLOWED_ORIGINS', 
+    default='http://localhost:3000,http://127.0.0.1:3000'
+).split(',')
 
 # ===== OAuth Настройки =====
 OAUTH_PROVIDERS = {
