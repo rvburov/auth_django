@@ -152,6 +152,15 @@ REST_FRAMEWORK = {
     ),
 }
 
+# drf-spectacular конфиг
+SPECTACULAR_SETTINGS = {
+    'TITLE': 'My API Documentation',
+    'DESCRIPTION': 'Документация для API аутентификации',
+    'VERSION': '1.0.0',
+    'SERVE_INCLUDE_SCHEMA': False,
+    'COMPONENT_SPLIT_REQUEST': True, 
+}
+
 # JWT настройки
 from datetime import timedelta
 
