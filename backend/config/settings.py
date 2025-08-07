@@ -31,7 +31,6 @@ DJANGO_APPS = [
 LOCAL_APPS = [
     'authentication.oauth',
     'authentication.jwt',
-    'authentication.api_keys',
     'authentication.custom_auth',
     'users',
 ]
