@@ -1,81 +1,72 @@
-# Django
-*.log
-*.pot
-*.pyc
-__pycache__/
-local_settings.py
-db.sqlite3
-media/
+# Файлы Python
+*.py[cod]  
+*.pyo
+*.pyd
+__pycache__/  
+.python-version
 
-# Backup files
-*.bak
-*.swp
-*~
+# Файлы Django
+*.log  
+*.pot  
+db.sqlite3  
+local_settings.py  
 
-# IDE
-.idea/
-.vscode/
-*.swp
-*.swo
-
-# Virtual environment
+# Виртуальные окружения
 venv/
 .env/
 env/
 .venv/
+ENV/
+env.bak/
+venv.bak/
 
-# Node.js
+# Статические файлы
+/staticfiles/  
+/static/  
+/media/  
+
+# Файлы редакторов и IDE
+.idea/  
+.vscode/  
+*.swp  
+*.swo
+*.bak
+*~
+
+# Системные файлы
+.DS_Store  
+Thumbs.db  
+
+# Тестирование
+.coverage  
+htmlcov/  
+.pytest_cache/  
+/tests/  
+
+# Node.js (если используется)
 node_modules/
 npm-debug.log*
 
-# Static files
-/staticfiles/
-/static/
-
-# Database
+# Базы данных
 *.db
 *.sqlite
-
-# macOS
-.DS_Store
-
-# Docker
-docker-compose.override.yml
-
-# Testing
-.coverage
-htmlcov/
-
-# Python
-*.py[cod]
-*$py.class
-.python-version
+*.sqlite3
 
 # Celery
 celerybeat-schedule.*
 celerybeat.pid
 
-# Environments
-.env
-.venv
-env/
-venv/
-ENV/
-env.bak/
-venv.bak/
-
-# PyCharm
-.idea/
-
-# VS Code
-.vscode/
-
-# Jupyter Notebook
+# Jupyter
 .ipynb_checkpoints
 
-# PyTest
-.pytest_cache/
-
-# Logs
+# Логи
 logs/
 *.log
+
+# Docker
+docker-compose.override.yml
+
+# Файлы окружения
+.env
+*.env
+secrets.json
