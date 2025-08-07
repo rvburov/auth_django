@@ -39,6 +39,9 @@ LOCAL_APPS = [
 THIRD_PARTY_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
+    'rest_framework_simplejwt.token_blacklist',
+    'corsheaders',
+    'drf_spectacular',
     'debug_toolbar',
 ]
 
@@ -55,6 +58,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
 ]
 
 # Корневая конфигурация URL
@@ -143,38 +147,84 @@ if DEBUG:
 # Настройки пользовательской модели пользователя
 AUTH_USER_MODEL = 'users.CustomUser'
 
+# ===== Настройки DRF =====
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework_simplejwt.authentication.JWTAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.IsAuthenticated',
     ),
+    'DEFAULT_SCHEMA_CLASS': 'drf_spectacular.openapi.AutoSchema',
 }
 
-# drf-spectacular конфиг
+# ===== Настройки документации API =====
 SPECTACULAR_SETTINGS = {
-    'TITLE': 'My API Documentation',
-    'DESCRIPTION': 'Документация для API аутентификации',
+    'TITLE': 'Authentication API',
+    'DESCRIPTION': 'API для аутентификации пользователей',
     'VERSION': '1.0.0',
     'SERVE_INCLUDE_SCHEMA': False,
-    'COMPONENT_SPLIT_REQUEST': True, 
+    'COMPONENT_SPLIT_REQUEST': True,
+    'SCHEMA_PATH_PREFIX': '/api/',
 }
 
-# JWT настройки
+# ===== JWT Настройки =====
 from datetime import timedelta
 
 SIMPLE_JWT = {
     'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
+    'ALGORITHM': 'HS256',
+    'SIGNING_KEY': SECRET_KEY,  
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'USER_ID_FIELD': 'id',
+    'USER_ID_CLAIM': 'user_id',
 }
 
-# OAuth настройки
-GOOGLE_OAUTH_CLIENT_ID = config('GOOGLE_OAUTH_CLIENT_ID')
-GOOGLE_OAUTH_CLIENT_SECRET = config('GOOGLE_OAUTH_CLIENT_SECRET')
-YANDEX_OAUTH_CLIENT_ID = config('YANDEX_OAUTH_CLIENT_ID')
-YANDEX_OAUTH_CLIENT_SECRET = config('YANDEX_OAUTH_CLIENT_SECRET')
+# ===== CORS Настройки =====
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3000",  # React/Vue dev server
+    "http://127.0.0.1:3000",
+    "https://domain.com",
+]
+
+CORS_ALLOW_CREDENTIALS = True
+
+# ===== OAuth Настройки =====
+OAUTH_PROVIDERS = {
+    'google': {
+        'client_id': config('GOOGLE_OAUTH_CLIENT_ID', default=''),
+        'client_secret': config('GOOGLE_OAUTH_CLIENT_SECRET', default=''),
+        'authorize_url': 'https://accounts.google.com/o/oauth2/auth',
+        'token_url': 'https://oauth2.googleapis.com/token',
+        'userinfo_url': 'https://www.googleapis.com/oauth2/v3/userinfo',
+        'scopes': ['openid', 'email', 'profile'],
+        'redirect_uri': config('GOOGLE_REDIRECT_URI', default='http://localhost:8000/oauth/google/callback/')
+    },
+    'yandex': {
+        'client_id': config('YANDEX_OAUTH_CLIENT_ID', default=''),
+        'client_secret': config('YANDEX_OAUTH_CLIENT_SECRET', default=''),
+        'authorize_url': 'https://oauth.yandex.ru/authorize',
+        'token_url': 'https://oauth.yandex.ru/token',
+        'userinfo_url': 'https://login.yandex.ru/info',
+        'scopes': ['login:email', 'login:info'],
+        'redirect_uri': config('YANDEX_REDIRECT_URI', default='http://localhost:8000/oauth/yandex/callback/')
+    }
+}
+
+# URL для перенаправления после успешной OAuth-аутентификации
+OAUTH_SUCCESS_REDIRECT_URL = config('OAUTH_SUCCESS_REDIRECT_URL', default='http://localhost:3000/login/success')
+OAUTH_FAILURE_REDIRECT_URL = config('OAUTH_FAILURE_REDIRECT_URL', default='http://localhost:3000/login/error')
+
+# ===== Настройки аутентификации =====
+AUTH_USER_MODEL = 'users.CustomUser'
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'authentication.oauth.backends.OAuthBackend',
+]
 
 # Настройки email 
 EMAIL_BACKEND = config('EMAIL_BACKEND')               # Используемый бекенд
